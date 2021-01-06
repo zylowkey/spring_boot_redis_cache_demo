@@ -6,5 +6,6 @@
 - 文件上传
 - 拦截器
 - 国际化
+- @RequestHeader 获取请求头信息
 
 ## 参考自深入浅出Spring Boot 2.x

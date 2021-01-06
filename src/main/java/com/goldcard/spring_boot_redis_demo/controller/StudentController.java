@@ -141,4 +141,14 @@ public class StudentController {
         result.put("meaasge",message);
         return result;
     }
+
+    /**
+     *  获取请求头参数
+     *  @RequestHeader 获取请求头信息
+     * @param id
+     */
+    @RequestMapping("/header")
+    public void headerParam(@RequestHeader("id") Long id){
+        System.out.println("======="+id);
+    }
 }
