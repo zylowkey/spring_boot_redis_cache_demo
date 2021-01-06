@@ -24,12 +24,16 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import javax.annotation.PostConstruct;
 import java.time.Duration;
+import java.util.Locale;
 
 @SpringBootApplication
 @MapperScan(basePackages = "com.goldcard.spring_boot_redis_demo.mapper")
@@ -41,6 +45,9 @@ public class SpringBootRedisDemoApplication implements WebMvcConfigurer {
     //RedisTemplate默认使用JdkSerializationRedisSerializer进行序列化键值
     @Autowired
     private RedisTemplate redisTemplate;
+
+    // 国际化拦截器
+    private LocaleChangeInterceptor lci = null;
 
     @PostConstruct
     public void init() {
@@ -125,6 +132,26 @@ public class SpringBootRedisDemoApplication implements WebMvcConfigurer {
         RedisCacheManager redisCacheManager = new RedisCacheManager(writer, config);
         return redisCacheManager;
     }
+    // 国际化解析器，请注意这个Bean Name要为localeResolver
+    @Bean(name = "localeResolver")
+    public LocaleResolver initLocaleResolver() {
+        SessionLocaleResolver slr = new SessionLocaleResolver();
+        // 默认国际化区域
+        slr.setDefaultLocale(Locale.SIMPLIFIED_CHINESE);
+        return slr;
+    }
+
+    // 创建国际化拦截器
+    @Bean
+    public LocaleChangeInterceptor localeChangeInterceptor() {
+        if (lci != null) {
+            return lci;
+        }
+        lci = new LocaleChangeInterceptor();
+        // 设置参数名
+        lci.setParamName("language");
+        return lci;
+    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -141,5 +168,8 @@ public class SpringBootRedisDemoApplication implements WebMvcConfigurer {
         InterceptorRegistration interceptorRegistration3 = registry.addInterceptor(new MulitiInterceptor3());
         //指定拦截匹配模式，限制拦截器拦截请求
         interceptorRegistration3.addPathPatterns("/interceptor/*");
+
+        //通过国际化拦截器的preHandle方法对请求的国际化区域参数进行修改
+        registry.addInterceptor(localeChangeInterceptor());
     }
 }
