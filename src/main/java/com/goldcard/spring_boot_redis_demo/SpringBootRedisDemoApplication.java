@@ -1,5 +1,9 @@
 package com.goldcard.spring_boot_redis_demo;
 
+import com.goldcard.spring_boot_redis_demo.interceptor.Interceptor1;
+import com.goldcard.spring_boot_redis_demo.interceptor.MulitiInterceptor1;
+import com.goldcard.spring_boot_redis_demo.interceptor.MulitiInterceptor2;
+import com.goldcard.spring_boot_redis_demo.interceptor.MulitiInterceptor3;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -19,6 +23,10 @@ import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.PostConstruct;
 import java.time.Duration;
@@ -26,7 +34,8 @@ import java.time.Duration;
 @SpringBootApplication
 @MapperScan(basePackages = "com.goldcard.spring_boot_redis_demo.mapper")
 @EnableCaching
-public class SpringBootRedisDemoApplication {
+//实现 WebMvcConfigurer 接口，覆盖 addInterceptors 方法，注册自定义拦截器
+public class SpringBootRedisDemoApplication implements WebMvcConfigurer {
     //Spring boot的自动装配机制会读取application.properties文件里的配置生成有关Redis的操作对象：
     //RedisConnectionFactory,RedisTemplate,StringRedisTemplete等常用对象
     //RedisTemplate默认使用JdkSerializationRedisSerializer进行序列化键值
@@ -115,5 +124,22 @@ public class SpringBootRedisDemoApplication {
         // 创建缓Redis存管理器
         RedisCacheManager redisCacheManager = new RedisCacheManager(writer, config);
         return redisCacheManager;
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        //注册拦截器到Spring MVC机制
+//        InterceptorRegistration interceptorRegistration = registry.addInterceptor(new Interceptor1());
+        InterceptorRegistration interceptorRegistration = registry.addInterceptor(new MulitiInterceptor1());
+        //指定拦截匹配模式，限制拦截器拦截请求
+        interceptorRegistration.addPathPatterns("/interceptor/*");
+
+        InterceptorRegistration interceptorRegistration2 = registry.addInterceptor(new MulitiInterceptor2());
+        //指定拦截匹配模式，限制拦截器拦截请求
+        interceptorRegistration2.addPathPatterns("/interceptor/*");
+
+        InterceptorRegistration interceptorRegistration3 = registry.addInterceptor(new MulitiInterceptor3());
+        //指定拦截匹配模式，限制拦截器拦截请求
+        interceptorRegistration3.addPathPatterns("/interceptor/*");
     }
 }
