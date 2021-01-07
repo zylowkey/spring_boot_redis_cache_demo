@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+//@RestController 使用 @RestController，可以让控制器都默认转换为JSON数据集 ，此时就不需要  @ResponseBody
 @Controller
 @RequestMapping("/stu")
 public class StudentController {
@@ -95,7 +96,7 @@ public class StudentController {
      * {...}代表占位符，可以配置参数名称
      * @PathVariable("id")通过名称获取RUL配置的参数
      * @param id
-     * @ResponseBody  响应为JSON数据集
+     * @ResponseBody  响应为JSON数据集  通过MappingJackson2HttpMessageConverter将数据转换为JSON数据集
      */
     @RequestMapping("/mvc/{id}")
     @ResponseBody

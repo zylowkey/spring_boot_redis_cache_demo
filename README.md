@@ -7,5 +7,6 @@
 - 拦截器
 - 国际化
 - @RequestHeader 获取请求头信息
+- @ControllerAdvice 控制器添加通知
 
 ## 参考自深入浅出Spring Boot 2.x
