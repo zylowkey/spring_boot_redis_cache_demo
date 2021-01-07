@@ -8,5 +8,6 @@
 - 国际化
 - @RequestHeader 获取请求头信息
 - @ControllerAdvice 控制器添加通知
+- mybatis 驼峰映射
 
 ## 参考自深入浅出Spring Boot 2.x

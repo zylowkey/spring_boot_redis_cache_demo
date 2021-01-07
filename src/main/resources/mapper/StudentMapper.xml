@@ -5,7 +5,10 @@
 
 <mapper namespace="com.goldcard.spring_boot_redis_demo.mapper.StudentMapper">
     <select id="getStudent" parameterType="long" resultType="stu">
-        select id,student_name,note from t_student
+        <!-- 配置文件未配置驼峰映射，这里的列名跟POJO属性一致 -->
+        select id,student_name as studentName,note from t_student
+        <!-- 配置文件配置驼峰映射，这里的列名跟POJO属性无需一致 -->
+        <!-- select id,student_name,note from t_student-->
         where id = #{id}
     </select>
 
